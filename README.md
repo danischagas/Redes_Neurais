@@ -18,4 +18,6 @@ A matéria será dividida em duas etapas ambas são inspiradas em conceitos biol
 
 * Redes Neurais: pasta com com os experimentos, código e discussão da parte de Redes Neurais da disciplina.
 
+Cada pasta contém o seu próprio README explicando detalhadamente o que ocorre em cada notebook.
+
 Colaboradores: Danielle dos Santos Chagas - Professor Doutor Daniel Cassar
