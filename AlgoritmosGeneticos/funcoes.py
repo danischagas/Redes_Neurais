@@ -10,13 +10,13 @@ import random
 #                                   Suporte                                   #
 ##############################################################################+
 
-
-# NOVIDADE
 def distancia_entre_dois_pontos(a, b):
     """Computa a distância Euclidiana entre dois pontos em R^2
+    
     Args:
       a: lista contendo as coordenadas x e y de um ponto.
       b: lista contendo as coordenadas x e y de um ponto.
+      
     Returns:
       Distância entre as coordenadas dos pontos `a` e `b`.
     """
@@ -31,12 +31,14 @@ def distancia_entre_dois_pontos(a, b):
     return dist
 
 
-# NOVIDADE
+
 def cria_cidades(n):
     """Cria um dicionário aleatório de cidades com suas posições (x,y).
+    
     Args:
       n: inteiro positivo
         Número de cidades que serão visitadas pelo caixeiro.
+        
     Returns:
       Dicionário contendo o nome das cidades como chaves e a coordenada no plano
       cartesiano das cidades como valores.
@@ -63,6 +65,8 @@ def gene_caixabinaria():
     lista = [0,1]
     gene = random.choice(lista)
     return gene
+
+
      
 def individuo_cb(n):
     """ gera um indivíduo para o problema das caixas binárias. 
@@ -79,6 +83,8 @@ def individuo_cb(n):
         individuo.append(gene)
     return individuo
 
+
+
 def funcao_objetivo_cb(individuo):
     """ computa a função objetivo no problema das caixas binárias.
     
@@ -90,10 +96,14 @@ def funcao_objetivo_cb(individuo):
     """
     return sum(individuo) + 1
 
+
+
 ###############################################################################
 #                           Experimento caixas binárias                       #
 #                                  busca em grade                             #
 ###############################################################################
+
+
 def populacao_cb(tamanho, n):
     """Cria uma população no problema das caixas binárias a partir de individuos
     
@@ -131,6 +141,8 @@ def funcao_objetivo_pop_cb(populacao):
         fitness.append(fobj)
     return fitness
 
+
+
 def selecao_roleta_max(populacao, fitness):
     """ Seleciona indivíduos de uma população usando o método da roleta.
     
@@ -146,6 +158,8 @@ def selecao_roleta_max(populacao, fitness):
     """
     populacao_selecionada = random.choices(populacao, weights=fitness, k=len(populacao))
     return populacao_selecionada
+
+
 
 def cruzamento_ponto_simples(pai, mae):
     """ Operador de cruzamento de ponto simples.
@@ -423,6 +437,7 @@ def funcao_objetivo_pop_senha(populacao, senha_verdadeira):
 #                            algoritmos genéticos                             #
 ###############################################################################
 
+
 def gene_lt(valor_max_peso): #valor da massa
     """ gera um gene válido (que pode assumir o valor minímo de l e máximo de l) para o problema da liga ternária mais cara. 
     
@@ -436,6 +451,8 @@ def gene_lt(valor_max_peso): #valor da massa
     lista = [5,valor_max_peso] #Precisa tirar a possibilidade de o gene assumir o valor de 100
     gene = random.uniform(lista)
     return gene
+
+
 
 def individuo_lt(numero_genes):
     """ gera um indivíduo válido para o problema da liga ternária mais cara. 
@@ -458,6 +475,8 @@ def individuo_lt(numero_genes):
                 valor_max_peso = valor_max_peso - gene 
                 break
     return individuo
+
+
 
 def populacao_inicial_lt(tamanho_populacao, numero_genes): 
     """Cria população inicial no problema da liga ternária
@@ -488,6 +507,8 @@ def funcao_objetivo_lt(individuo, preco):
         valor = valor + (massa*valor_p_kg)/1000 #tranformamos em valor por grama
 
     return valor #xAbYcZ, pegar o indivíduo e multiplicar pela lista de preços
+
+
 
 def funcao_objetivo_pop_lt(individuo, preco): #Salva a lista de todos os fitness de todos os individuos de uma
     """ Calcula a funcao objetivo para todos os membros de um populacao.
@@ -535,24 +556,12 @@ def selecao_torneio_max(populacao, fitness, tamanho_torneio=3):
     return selecionados
 
 
-def cruzamento_ponto_simples(pai, mae): #DEVE MANTER A SOMA EM 100
-    """ Operador de cruzamento de ponto simples.
-    
-    Args:
-        indivíduo: lista contendo os genes das caixas binárias
-    
-    Returns:
-        Duas listas em que cada uma representa um filho dos pais que foram os argumentos.
-    """
-
-    ponto_de_corte = random.randint(1,len(pai)-1)
+def cruzamento_ordenado(pai, mae): #DEVE MANTER A SOMA EM 100
     
     #FAZer um laço de repetição que enquanto for verdade a condição soma = 100 corta o gene?
     #mudar a 
         
-    filho1 = pai[:ponto_de_corte]+mae[ponto_de_corte:]
-    filho2 = mae[:ponto_de_corte]+pai[ponto_de_corte:]
-        
+
     return filho1, filho2
 
 
@@ -574,21 +583,26 @@ def mutacao_troca_lt(individuo):
     return individuo
 
 ###############################################################################
-#                          Experimento liga ternária                          #
-#                            algoritmos genéticos                             #
+#                        Experimento caixeiro viajante                        #
 ###############################################################################
 
 def individuo_cv(cidades):
     """Sorteia um caminho possível no problema do caixeiro viajante
+    
     Args:
       cidades:
         Dicionário onde as chaves são os nomes das cidades e os valores são as
         coordenadas das cidades.
+        
     Return:
       Retorna uma lista de nomes de cidades formando um caminho onde visitamos
       cada cidade apenas uma vez.
     """
-    pass
+    nomes = list(cidades.keys()) # pega as chaves(os nomes) do dicionário
+    random.shuffle(nomes) #embaralha os nomes (as chaves) das cidades geradas
+    return nomes
+
+
 
 def populacao_inicial_cv(tamanho, cidades):
     """Cria população inicial no problema do caixeiro viajante.
@@ -605,13 +619,71 @@ def populacao_inicial_cv(tamanho, cidades):
     populacao = []
     for _ in range(tamanho):
         populacao.append(individuo_cv(cidades))
-    return 
+    return populacao
+
+
+
+def cruzamento_ordenado(pai, mae):
+    """Operador de cruzamento ordenado.
+    
+    Neste cruzamento, os filhos mantém os mesmos genes que seus pais tinham,
+    porém em uma outra ordem. Trata-se de um tipo de cruzamento útil para
+    problemas onde a ordem dos genes é importante e não podemos alterar os genes
+    em si. É um cruzamento que pode ser usado no problema do caixeiro viajante.
+    
+    Ver pág. 37 do livro do Wirsansky.
+    
+    Args:
+      pai: uma lista representando um individuo
+      mae : uma lista representando um individuo
+      
+    Returns:
+      Duas listas, sendo que cada uma representa um filho dos pais que foram os
+      argumentos. Estas listas mantém os genes originais dos pais, porém altera
+      a ordem deles
+    """
+    corte1 = random.randint(0, len(pai) - 2) #definir o corte 1, pode ir do começo até 
+    corte2 = random.randint(corte1 + 1, len(pai) - 1) # sendo a partir do corte 1 a gente garante que não vão ser iguais
+    
+    filho1 = pai[corte1:corte2]
+    for gene in mae: #navegar os genes da mãe e quando não está, a gente adiciona o gene no individuo
+        if gene not in filho1:
+            filho1.append(gene)
+            
+    filho2 = mae[corte1:corte2]
+    for gene in pai:
+        if gene not in filho2:
+            filho2.append(gene)
+            
+    return filho1, filho2
+
+
+def mutacao_de_troca(individuo):
+    """Troca o valor de dois genes.
+    
+    Args:
+      individuo: uma lista representado um individuo.
+      
+    Return:
+      O indivíduo recebido como argumento, porém com dois dos seus genes
+      trocados de posição.
+    """
+    indices = list(range(len(individuo))) #lista com o range que vai de 0 até o tamanho da lista.
+    lista_sorteada = random.sample(indices, k=2) #sorteia dois indices aleatórios do indivíduo
+    indice1 = lista_sorteada[0]    #primeiro indice sorteado na função acima, posição na lista
+    indice2 = lista_sorteada[1]
+    
+    individuo[indice1], individuo[indice2] = individuo[indice2], individuo[indice1] #antes ele só tinha estabelecido os individuos, nessa linha realiza a mutação de fato. Ou seja, trocamos o valor de um indice (uma posição) por outro valor em outro indíce.
+    
+    return individuo
 
 def funcao_objetivo_cv(individuo, cidades):
     """Computa a funcao objetivo de um individuo no problema do caixeiro viajante.
+    
     Args:
       individiuo:
         Lista contendo a ordem das cidades que serão visitadas
+        
       cidades:
         Dicionário onde as chaves são os nomes das cidades e os valores são as
         coordenadas das cidades.
@@ -623,8 +695,21 @@ def funcao_objetivo_cv(individuo, cidades):
 
     distancia = 0
 
-    # preencher o código
-
+    for posicao in range(len(individuo) - 1): #
+        
+        partida = cidades[individuo[posicao]] #coordenada da cidade de partida, individuo = lista de cidades, posicão = cidade específica.
+        chegada = cidades[individuo[posicao + 1]] #próxima cidade, cidade+1. coordenada da chegada
+        
+        percurso = distancia_entre_dois_pontos(partida, chegada) #pela função, temos o percurso
+        distancia = distancia + percurso
+        
+    # calcular o caminho de volta para a cidade inicial
+    partida = cidades[individuo[-1]]
+    chegada = cidades[individuo[0]]
+    
+    percurso = distancia_entre_dois_pontos(partida, chegada)
+    distancia = distancia + percurso
+        
     return distancia
 
 def funcao_objetivo_pop_cv(populacao, cidades):
