@@ -4,6 +4,7 @@
 
 #---------------------------------
 import random 
+import numpy as np
 #---------------------------------
 
 ###############################################################################
@@ -439,7 +440,7 @@ def funcao_objetivo_pop_senha(populacao, senha_verdadeira):
 
 
 def gene_lt(valor_max_peso): #valor da massa
-    """ gera um gene válido (que pode assumir o valor minímo de l e máximo de l) para o problema da liga ternária mais cara. 
+    """ gera um gene válido para o problema da liga ternária mais cara. 
     
     Args: 
         valor_max_peso: o limite de valor que o gene pode assumir
@@ -448,49 +449,50 @@ def gene_lt(valor_max_peso): #valor da massa
         gene: um valor dentro das condições
      
      """
-    lista = [5,valor_max_peso] #Precisa tirar a possibilidade de o gene assumir o valor de 100
-    gene = random.uniform(lista)
+    gene = random.uniform(5,valor_max_peso) #aqui é garantido que o valor minímo de cada gene seja 5
     return gene
 
 
 
-def individuo_lt(numero_genes):
+def individuo_lt(numero_genes, preco):
     """ gera um indivíduo válido para o problema da liga ternária mais cara. 
 
     Args: 
         numero_genes: numero de genes do individuo
 
     Return:
-        individuo: lista contendo um indivíduo dentro das condições estabelecidas
+        individuo: lista contendo um indivíduo dentro com 92 genes
+        
      """
-    # (que contenha apenas 3 valores =! 0 com no valor mínimo de 5 e a soma dentro dos genes do individuo devem ser 100)
-    individuo = [0 for _ in range(0,92)] #definindo que a lista tenha 92 itens #aqui a soma em cada individuo é 100, tem que ter 3 e no minimo 5g em cada
-    valor_max_peso = 100 
-    for _ in range(numero_genes): #se não soma for 100 aí refaz um loop
+    
+    individuo = [0 for _ in range(len(list(preco.values())))] #cria lista de 0's  com o comprimento igual ao número de valores no dicionário preco.   
+    valor_max = 100 #aqui garantimos a soma total como 100
+    
+    for n in range(numero_genes): #se a soma não for 100 aí refaz um loop
         while True:
-            j = random.uniform(len(individuo))
+            j = random.uniform(0, len(individuo) - 1)
             if individuo[j] == 0: # o elemento não foi escolhido ainda
-                gene = gene_lt(valor_max_peso)
-                individuo[j] = gene 
-                valor_max_peso = valor_max_peso - gene 
-                break
+                gene = gene_lt(valor_max-((numero_genes-n-1)*5)) #Nessa linha, vamos garantir que nenhum indivíduo assuma o valor de 100. O valor total que a massa pode assumir é subtraído do numero total de genes - o n (indíce) menos 1 vezes 5. Subtraímos do valor total a cada iteração
+                individuo[j] = gene #atualiza o valor do gene dentro da lista indivíduo
+                valor_max -= gene #joga a informação para a lista lá em cima                break
+    
     return individuo
 
 
 
-def populacao_inicial_lt(tamanho_populacao, numero_genes): 
-    """Cria população inicial no problema da liga ternária
+def populacao_inicial_lt(tamanho_populacao, numero_genes, preco): 
+    """Cria população inicial composta de indivíduos da liga ternária
     
     Args
-      tamanho_populacao: quantidade de indivíduos em uma população. 
-      numero_genes: numero de genes do individuo
+      tamanho_populacao: quantidade de indivíduos em uma população;
+      numero_genes: numero de genes do individuo;
       
     Returns:
       Lista com todos os indivíduos da população 
     """
     populacao = []
     for _ in range(tamanho_populacao):
-        populacao.append(individuo_lt(numero_genes))
+        populacao.append(individuo_lt(numero_genes, preco))
     return populacao
 
 def funcao_objetivo_lt(individuo, preco):
@@ -498,23 +500,25 @@ def funcao_objetivo_lt(individuo, preco):
     
     Args:
       individiuo: lista contendo os genes das ligas ternárias
+      preco: dicionário que relaciona o elemento e o seu preço ($/kg)
       
     Return:
-      Um valor representando a fórmula para o cálculo do preço total da liga ternária.
+      O valor do preço total da liga ternária (fitness).
     """
     valor = 0
     for massa, valor_p_kg in zip(individuo, preco.values()):
-        valor = valor + (massa*valor_p_kg)/1000 #tranformamos em valor por grama
+        valor += massa*valor_p_kg/1000 #Retorna o valor da massa dos genes dos indivíduos multiplicado pelo seu preço (extraído do dicionário), transformado em vlaor por grama
+    return valor 
+# for _ in individuo    if z =! 0 > 3:      retorna 0.01
 
-    return valor #xAbYcZ, pegar o indivíduo e multiplicar pela lista de preços
 
 
-
-def funcao_objetivo_pop_lt(individuo, preco): #Salva a lista de todos os fitness de todos os individuos de uma
+def funcao_objetivo_pop_lt(populacao, preco): #Salva a lista de todos os fitness de todos os individuos de uma população
     """ Calcula a funcao objetivo para todos os membros de um populacao.
     
     Args:
-        População: lista com todos os indivíduos da população.
+        populacao: lista com todos os indivíduos da população;
+        preco: dicionário que relaciona o elemento e o seu preço ($/kg)
     
     Return: 
         Lista de valores representando a fitness de cada individuo da população.
@@ -556,15 +560,35 @@ def selecao_torneio_max(populacao, fitness, tamanho_torneio=3):
     return selecionados
 
 
-def cruzamento_ordenado(pai, mae): #DEVE MANTER A SOMA EM 100
+def cruzamento_ordenado_lt(pai, mae, numero_genes): 
+    """Operador de cruzamento que .
     
-    #FAZer um laço de repetição que enquanto for verdade a condição soma = 100 corta o gene?
-    #mudar a 
-        
+    Args:
+      pai: uma lista representando um individuo
+      mae: uma lista representando um individuo
+      
+    Returns:
+      Duas listas, sendo que cada uma representa um filho dos pais que foram os
+      argumentos. Estas listas mantém os genes originais dos pais, porém altera
+      a ordem deles
+    """
+    corte1 = random.randint(0, len(pai) - 2) #definir o corte 1, pode ir do começo até 
+    corte2 = random.randint(corte1 + 1, len(pai) - 1) # sendo a partir do corte 1 a gente garante que não vão ser iguais
+    
+    filho1 = pai[corte1:corte2]
+    for gene in mae: #navegar os genes da mãe e quando não está, a gente adiciona o gene no individuo
+        if gene not in filho1:
+            filho1.append(gene)
+            
+    filho2 = mae[corte1:corte2]
+    for gene in pai:
+        if gene not in filho2:
+            filho2.append(gene)
+            
+    if np.count_nonzero(filho1) == numero_genes and np.count_nonzero(filho2) == numero_genes
+        return filho1, filho2
 
-    return filho1, filho2
-
-
+#AQUI TÁ GARANTIDO QUE A SOMA É 100????
 
 def mutacao_troca_lt(individuo):
     """ Realiza a mutação de um gene no problema das ligas ternárias.
@@ -580,6 +604,7 @@ def mutacao_troca_lt(individuo):
     
     gene_a_ser_mutado = random.randint(0, len(individuo) - 1) #aqui tem que ser onde o gene =! 0.
     individuo[gene_a_ser_mutado] = gene_caixabinaria()
+    gene = np.countnonzero
     return individuo
 
 ###############################################################################
@@ -728,5 +753,97 @@ def funcao_objetivo_pop_cv(populacao, cidades):
     resultado = []
     for individuo in populacao:
         resultado.append(funcao_objetivo_cv(individuo, cidades))
+
+    return resultado
+
+###############################################################################
+#                        Experimento mochila A.07                             #
+###############################################################################
+
+
+def computa_mochila(individuo, objetos, ordem_dos_nomes):
+    
+    """Computa o valor total e peso total de uma mochila
+    
+    Args:
+      individiuo:
+        Lista binária contendo a informação de quais objetos serão selecionados.
+      objetos:
+        Dicionário onde as chaves são os nomes dos objetos e os valores são
+        dicionários com a informação do peso e valor.
+      ordem_dos_nomes:
+        Lista contendo a ordem dos nomes dos objetos.
+        
+    Returns:
+      valor_total: valor total dos itens da mochila em unidades de dinheiros.
+      peso_total: peso total dos itens da mochila em unidades de massa.
+    """
+
+    valor_total = 0
+    peso_total = 0
+    
+    for pegou_o_item_ou_nao, nome_do_item in zip(individuo, ordem_dos_nomes): #ordem dos nomes tem a mesma coisa que a lista, atribuindo o nome aos valores
+        if pegou_o_item_ou_nao == 1:
+            valor_do_item = objetos[nome_do_item]["valor"]#pega o nome e o valor dos objetos
+            peso_do_item = objetos[nome_do_item]["peso"]
+            
+            valor_total = valor_total + valor_do_item
+            peso_total = peso_total + peso_do_item
+
+    return valor_total, peso_total #quanto vale e quanto pesa a mochila
+
+def funcao_objetivo_mochila(individuo, objetos, limite, ordem_dos_nomes):
+    
+    """Computa a funcao objetivo de um candidato no problema da mochila.
+    
+    Args:
+      individiuo:
+        Lista binária contendo a informação de quais objetos serão selecionados.
+      objetos:
+        Dicionário onde as chaves são os nomes dos objetos e os valores são
+        dicionários com a informação do peso e valor.
+      limite:
+        Número indicando o limite de peso que a mochila aguenta.
+      ordem_dos_nomes:
+        Lista contendo a ordem dos nomes dos objetos.
+        
+    Returns:
+      Valor total dos itens inseridos na mochila considerando a penalidade para
+      quando o peso excede o limite.
+    """
+
+    valor_mochila, peso_mochila = computa_mochila(individuo, objetos, ordem_dos_nomes)
+    
+    if peso_mochila > limite:
+        valor_mochila = 0.01
+    
+    return valor_mochila
+
+def funcao_objetivo_pop_mochila(populacao, objetos, limite, ordem_dos_nomes):
+    
+    """Computa a fun. objetivo de uma populacao no problema da mochila
+    
+    Args:
+      populacao:
+        Lista com todos os individuos da população
+      objetos:
+        Dicionário onde as chaves são os nomes dos objetos e os valores são
+        dicionários com a informação do peso e valor.
+      limite:
+        Número indicando o limite de peso que a mochila aguenta.
+      ordem_dos_nomes:
+        Lista contendo a ordem dos nomes dos objetos.
+        
+    Returns:
+      Lista contendo o valor dos itens da mochila de cada indivíduo.
+    """
+
+    resultado = []
+    for individuo in populacao:
+        resultado.append(
+            funcao_objetivo_mochila(
+                individuo, objetos, limite, ordem_dos_nomes
+            )
+        )
 
     return resultado
