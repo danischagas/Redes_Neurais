@@ -469,13 +469,19 @@ def individuo_lt(numero_genes, preco):
     valor_max = 100 #aqui garantimos a soma total como 100
     
     for n in range(numero_genes): #se a soma não for 100 aí refaz um loop
-        while True:
-            j = random.uniform(0, len(individuo) - 1)
-            if individuo[j] == 0: # o elemento não foi escolhido ainda
-                gene = gene_lt(valor_max-((numero_genes-n-1)*5)) #Nessa linha, vamos garantir que nenhum indivíduo assuma o valor de 100. O valor total que a massa pode assumir é subtraído do numero total de genes - o n (indíce) menos 1 vezes 5. Subtraímos do valor total a cada iteração
-                individuo[j] = gene #atualiza o valor do gene dentro da lista indivíduo
-                valor_max -= gene #joga a informação para a lista lá em cima                break
+        cond = True
+         while cond:
+            index = random.randint(0,len(individuo)-1)
+            
+            if individuo[index] == 0:# o elemento não foi escolhido ainda               
+                gene = gene_lt(valor_maximo_massa-((numero_genes-n-1)*5)) #Nessa linha, vamos garantir que nenhum indivíduo assuma o valor de 100. O valor total que a massa pode assumir é subtraído do numero total de genes - o n (indíce) menos 1 vezes 5. Subtraímos do valor total a cada iteração
+                individuo[index] = gene
+                valor_maximo_massa -= gene
+                cond = False
     
+    index = random.randint(0,len(individuo)-1)    
+    individuo[index] = valor_maximo_massa
+         
     return individuo
 
 
@@ -495,6 +501,8 @@ def populacao_inicial_lt(tamanho_populacao, numero_genes, preco):
         populacao.append(individuo_lt(numero_genes, preco))
     return populacao
 
+
+
 def funcao_objetivo_lt(individuo, preco):
     """ Calcula o fitness do individuo para o problema da liga ternária
     
@@ -509,7 +517,7 @@ def funcao_objetivo_lt(individuo, preco):
     for massa, valor_p_kg in zip(individuo, preco.values()):
         valor += massa*valor_p_kg/1000 #Retorna o valor da massa dos genes dos indivíduos multiplicado pelo seu preço (extraído do dicionário), transformado em vlaor por grama
     return valor 
-# for _ in individuo    if z =! 0 > 3:      retorna 0.01
+    # for _ in individuo    if z =! 0 > 3:      retorna 0.01
 
 
 
@@ -528,6 +536,8 @@ def funcao_objetivo_pop_lt(populacao, preco): #Salva a lista de todos os fitness
         fobj = funcao_objetivo_lt(individuo, preco)
         fitness.append(fobj)
     return fitness
+
+
 
 
 def selecao_torneio_max(populacao, fitness, tamanho_torneio=3):
@@ -569,26 +579,22 @@ def cruzamento_ordenado_lt(pai, mae, numero_genes):
       
     Returns:
       Duas listas, sendo que cada uma representa um filho dos pais que foram os
-      argumentos. Estas listas mantém os genes originais dos pais, porém altera
-      a ordem deles
+      argumentos. 
     """
-    corte1 = random.randint(0, len(pai) - 2) #definir o corte 1, pode ir do começo até 
-    corte2 = random.randint(corte1 + 1, len(pai) - 1) # sendo a partir do corte 1 a gente garante que não vão ser iguais
     
-    filho1 = pai[corte1:corte2]
-    for gene in mae: #navegar os genes da mãe e quando não está, a gente adiciona o gene no individuo
-        if gene not in filho1:
-            filho1.append(gene)
-            
-    filho2 = mae[corte1:corte2]
-    for gene in pai:
-        if gene not in filho2:
-            filho2.append(gene)
-            
-    if np.count_nonzero(filho1) == numero_genes and np.count_nonzero(filho2) == numero_genes
-        return filho1, filho2
+    lista_index_pai = [index for index, value in enumerate(pai) if value != 0]
+    lista_index_mae = [index for index, value in enumerate(mae) if value != 0]
 
-#AQUI TÁ GARANTIDO QUE A SOMA É 100????
+ 
+
+    filho1, filho2 = np.zeros(len(preco.values())),np.zeros(len(preco.values()))
+
+    for _ in range(n_genes):
+        i_pai, i_mae = random.choice(lista_index_pai),random.choice(lista_index_mae)
+        filho1[i_pai] = mae[i_mae]
+        filho2[i_mae] = pai[i_pai]
+
+    return filho1, filho2
 
 def mutacao_troca_lt(individuo):
     """ Realiza a mutação de um gene no problema das ligas ternárias.
