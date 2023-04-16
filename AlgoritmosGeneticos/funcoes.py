@@ -465,24 +465,7 @@ def individuo_lt(numero_genes, preco):
         
      """
     
-    individuo = [0 for _ in range(len(list(preco.values())))] #cria lista de 0's  com o comprimento igual ao número de valores no dicionário preco.   
-    valor_max = 100 #aqui garantimos a soma total como 100
-    
-    for n in range(numero_genes): #se a soma não for 100 aí refaz um loop
-        cond = True
-         while cond:
-            index = random.randint(0,len(individuo)-1)
-            
-            if individuo[index] == 0:# o elemento não foi escolhido ainda               
-                gene = gene_lt(valor_maximo_massa-((numero_genes-n-1)*5)) #Nessa linha, vamos garantir que nenhum indivíduo assuma o valor de 100. O valor total que a massa pode assumir é subtraído do numero total de genes - o n (indíce) menos 1 vezes 5. Subtraímos do valor total a cada iteração
-                individuo[index] = gene
-                valor_maximo_massa -= gene
-                cond = False
-    
-    index = random.randint(0,len(individuo)-1)    
-    individuo[index] = valor_maximo_massa
-         
-    return individuo
+pass
 
 
 
@@ -518,6 +501,7 @@ def funcao_objetivo_lt(individuo, preco):
         valor += massa*valor_p_kg/1000 #Retorna o valor da massa dos genes dos indivíduos multiplicado pelo seu preço (extraído do dicionário), transformado em vlaor por grama
     return valor 
     # for _ in individuo    if z =! 0 > 3:      retorna 0.01
+    # se sum de list > 100 e se sum.nozero > 3 - atribui valor baixo
 
 
 
@@ -558,7 +542,7 @@ def selecao_torneio_max(populacao, fitness, tamanho_torneio=3):
     selecionados = []
     par_populacao_fitness = list(zip(populacao, fitness))
     for _ in range(len(populacao)):
-        combatentes = rd.sample(par_populacao_fitness, tamanho_torneio)
+        combatentes = random.sample(par_populacao_fitness, tamanho_torneio)
         maximo_fitness = 0
         for par_individuo_fitness in combatentes:
             individuo = par_individuo_fitness[0]
@@ -581,20 +565,7 @@ def cruzamento_ordenado_lt(pai, mae, numero_genes):
       Duas listas, sendo que cada uma representa um filho dos pais que foram os
       argumentos. 
     """
-    
-    lista_index_pai = [index for index, value in enumerate(pai) if value != 0]
-    lista_index_mae = [index for index, value in enumerate(mae) if value != 0]
-
- 
-
-    filho1, filho2 = np.zeros(len(preco.values())),np.zeros(len(preco.values()))
-
-    for _ in range(n_genes):
-        i_pai, i_mae = random.choice(lista_index_pai),random.choice(lista_index_mae)
-        filho1[i_pai] = mae[i_mae]
-        filho2[i_mae] = pai[i_pai]
-
-    return filho1, filho2
+    pass
 
 def mutacao_troca_lt(individuo):
     """ Realiza a mutação de um gene no problema das ligas ternárias.
