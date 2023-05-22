@@ -23,5 +23,7 @@ Esta pasta contém os experimentos de Algoritmos Genéticos, seguindo a seguinte
 
 * experimento GA.03 - caixeiro com gasolina infinita.ipynb - variação do experimento do caixeiro viajante, resolvido com algoritmos genéticos (probelma de maximização)
 
+** experimento GA.04 - caixeiro astronauta.ipynb - variação do experimento do caixeiro viajante e que temos três dimensões, resolvido com algoritmos genéticos (probelma de minimização)
+
 #### Outros notebooks:
 * funcoes.py - arquivo de txt para organizar e armazenar funções utilizadas nos notebooks durante os experimentos.
